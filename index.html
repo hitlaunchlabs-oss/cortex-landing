@@ -1,106 +1,129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cortex — Your second brain, powered by AI</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MeetPilot – Your AI Meeting Assistant</title>
+  <meta name="description" content="Record, transcribe, summarize, and extract action items automatically. Run smarter meetings with AI." />
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            background: '#ffffff',
-            surface: '#f8fafc',
-            primary: '#0f172a',
-            accent: '#2563eb',
-            text: '#0f172a',
-            border: '#e2e8f0',
+            bg: '#FFFFFF',
+            'bg-secondary': '#F5F5F7',
+            'text-primary': '#111111',
+            'text-secondary': '#6E6E73',
+            accent: '#0071E3',
+            border: '#E5E5E7',
           },
           fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif'],
+          },
+          borderRadius: {
+            card: '14px',
+            btn: '12px',
           },
           boxShadow: {
-            'soft': '0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.05)',
-            'card': '0 1px 3px 0 rgba(15, 23, 42, 0.08), 0 1px 2px -1px rgba(15, 23, 42, 0.08)',
-            'card-hover': '0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.08)',
-            'nav': '0 1px 3px 0 rgba(15, 23, 42, 0.06)',
+            soft: '0 4px 20px rgba(0,0,0,0.05)',
+            'soft-hover': '0 8px 30px rgba(0,0,0,0.08)',
+            'btn-glow': '0 0 0 4px rgba(0, 113, 227, 0.2)',
+          },
+          transitionDuration: {
+            smooth: '400ms',
           },
         },
       },
-    }
+    };
   </script>
   <style>
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-    .nav-transparent { background: transparent; box-shadow: none; }
-    .nav-solid { background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); box-shadow: 0 1px 3px 0 rgba(15, 23, 42, 0.06); }
+    * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; }
+    body { background-color: #FFFFFF; color: #111111; }
+    .animate-fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    .animate-fade-up.visible { opacity: 1; transform: translateY(0); }
+    .card-hover { transition: all 0.4s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    .btn-primary { transition: all 0.4s ease; }
+    .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2); }
+    .btn-secondary { transition: all 0.4s ease; }
+    .btn-secondary:hover { transform: scale(1.02); }
+    .mockup-float { animation: float 6s ease-in-out infinite; }
+    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .nav-blur { background: rgba(255,255,255,0.8); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); }
+    .link-hover { transition: color 0.2s ease; }
+    .link-hover:hover { color: #0071E3; }
   </style>
 </head>
-<body class="bg-background text-primary antialiased">
-  <!-- 1. Sticky Navbar -->
-  <header id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 nav-transparent">
-    <nav class="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
-      <a href="#" class="text-xl font-semibold text-primary tracking-tight">Cortex</a>
+<body class="antialiased">
+  <!-- Navbar -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-border/60">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 flex items-center justify-between h-16">
+      <a href="#" class="text-xl font-semibold text-text-primary tracking-tight">MeetPilot</a>
       <div class="hidden md:flex items-center gap-8">
-        <a href="#features" class="text-sm text-primary/80 hover:text-primary transition-colors">Features</a>
-        <a href="#demo" class="text-sm text-primary/80 hover:text-primary transition-colors">Demo</a>
-        <a href="#pricing" class="text-sm text-primary/80 hover:text-primary transition-colors">Pricing</a>
-        <a href="#contact" class="text-sm text-primary/80 hover:text-primary transition-colors">Contact</a>
+        <a href="#features" class="text-text-secondary link-hover text-[15px]">Features</a>
+        <a href="#how-it-works" class="text-text-secondary link-hover text-[15px]">How it works</a>
+        <a href="#pricing" class="text-text-secondary link-hover text-[15px]">Pricing</a>
+        <a href="#contact" class="text-text-secondary link-hover text-[15px]">Contact</a>
       </div>
-      <a href="#cta" class="inline-flex items-center justify-center px-5 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-soft hover:shadow-card">Get Started</a>
-    </nav>
-  </header>
+      <a href="#cta" class="inline-flex items-center justify-center px-5 py-2.5 rounded-btn bg-accent text-white text-[15px] font-medium btn-primary">Get Started</a>
+    </div>
+  </nav>
 
-  <!-- 2. Hero Section -->
-  <section class="min-h-screen flex items-center relative overflow-hidden">
-    <div class="absolute inset-0 bg-gradient-to-br from-surface via-background to-surface/50 pointer-events-none"></div>
-    <div class="max-w-6xl mx-auto px-6 lg:px-8 py-24 lg:py-32 relative z-10 w-full">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-        <div class="fade-in">
-          <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-primary leading-tight tracking-tight">Your second brain, powered by AI.</h1>
-          <p class="mt-6 text-lg text-primary/70 max-w-xl leading-relaxed">Capture ideas, organize thoughts, and let AI manage your knowledge effortlessly.</p>
-          <div class="mt-10 flex flex-wrap gap-4">
-            <a href="#cta" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-soft hover:shadow-card">Get Started</a>
-            <a href="#demo" class="inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-primary bg-surface border border-border rounded-lg hover:bg-border/50 transition-all duration-200">View Demo</a>
-          </div>
+  <!-- Hero -->
+  <section class="hero pt-32 pb-24 sm:pt-40 sm:pb-32 px-6 sm:px-8 max-w-6xl mx-auto">
+    <div class="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
+      <div class="animate-fade-up">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold text-text-primary tracking-tight leading-[1.1] mb-6">
+          Your AI meeting assistant
+        </h1>
+        <p class="text-lg sm:text-xl text-text-secondary max-w-xl leading-relaxed mb-10">
+          Record, transcribe, summarize, and extract action items automatically.
+        </p>
+        <div class="flex flex-wrap gap-4">
+          <a href="#cta" class="btn-primary inline-flex items-center justify-center px-6 py-3.5 rounded-btn bg-accent text-white font-medium text-[15px]">Get Started</a>
+          <a href="#dashboard-preview" class="btn-secondary inline-flex items-center justify-center px-6 py-3.5 rounded-btn bg-bg-secondary text-text-primary font-medium text-[15px] border border-border">Watch Demo</a>
         </div>
-        <div class="fade-in lg:pl-8">
-          <div class="bg-white rounded-2xl border border-border shadow-card overflow-hidden">
-            <div class="p-4 border-b border-border bg-surface/50 flex gap-2">
-              <span class="w-3 h-3 rounded-full bg-red-200"></span>
-              <span class="w-3 h-3 rounded-full bg-amber-200"></span>
-              <span class="w-3 h-3 rounded-full bg-emerald-200"></span>
-            </div>
-            <div class="p-5 space-y-4">
-              <div class="flex items-center gap-2 text-sm font-medium text-primary/80">
-                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Notes
+      </div>
+      <div class="animate-fade-up mockup-float" style="transition-delay: 0.1s;">
+        <!-- Dashboard mockup -->
+        <div class="rounded-2xl overflow-hidden shadow-soft border border-border bg-white" style="box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);">
+          <div class="bg-bg-secondary/80 px-4 py-3 flex items-center gap-2 border-b border-border">
+            <span class="w-3 h-3 rounded-full bg-[#FF5F57]"></span>
+            <span class="w-3 h-3 rounded-full bg-[#FEBC2E]"></span>
+            <span class="w-3 h-3 rounded-full bg-[#28C840]"></span>
+            <span class="ml-4 text-text-secondary text-sm">MeetPilot — Team standup</span>
+          </div>
+          <div class="flex min-h-[340px]">
+            <aside class="w-14 sm:w-16 bg-bg-secondary/50 border-r border-border flex flex-col items-center py-4 gap-2">
+              <div class="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div>
+              <div class="w-9 h-9 rounded-xl bg-border/60"></div>
+              <div class="w-9 h-9 rounded-xl bg-border/60"></div>
+              <div class="w-9 h-9 rounded-xl bg-border/60"></div>
+            </aside>
+            <div class="flex-1 p-4 sm:p-5 flex flex-col gap-4 min-w-0">
+              <div class="flex-1 rounded-xl bg-bg-secondary/40 p-3 sm:p-4 border border-border/80 overflow-hidden">
+                <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">
+                  <span class="text-text-primary font-medium">[00:12]</span> Sarah: Let’s align on Q2 goals by Friday.<br/>
+                  <span class="text-text-primary font-medium">[00:28]</span> Alex: I’ll send the design specs by EOD.<br/>
+                  <span class="text-text-primary font-medium">[00:45]</span> Jordan: Can we move the launch to next week?
+                </p>
               </div>
-              <div class="space-y-2">
-                <div class="h-3 w-3/4 rounded bg-primary/10"></div>
-                <div class="h-3 w-full rounded bg-primary/5"></div>
-                <div class="h-3 w-5/6 rounded bg-primary/5"></div>
-              </div>
-              <div class="flex items-center gap-2 text-sm font-medium text-primary/80 pt-2">
-                <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                Tasks
-              </div>
-              <div class="flex gap-2">
-                <span class="px-2 py-1 rounded bg-surface text-xs text-primary/70">Meeting prep</span>
-                <span class="px-2 py-1 rounded bg-surface text-xs text-primary/70">Q1 roadmap</span>
-              </div>
-              <div class="pt-2 border-t border-border">
-                <div class="flex items-center gap-2 text-sm font-medium text-accent">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                  AI suggestions
+              <div class="grid grid-cols-2 gap-3">
+                <div class="rounded-xl bg-white border border-border p-3 shadow-soft">
+                  <p class="text-xs font-medium text-text-secondary mb-1">Summary</p>
+                  <p class="text-sm text-text-primary">Q2 goals, design specs, launch timeline.</p>
                 </div>
-                <p class="mt-1 text-xs text-primary/60">Summarize notes · Suggest next tasks</p>
+                <div class="rounded-xl bg-white border border-border p-3 shadow-soft">
+                  <p class="text-xs font-medium text-text-secondary mb-2">Action items</p>
+                  <ul class="text-sm text-text-primary space-y-1">
+                    <li>• Align Q2 goals — Sarah</li>
+                    <li>• Design specs — Alex</li>
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
@@ -109,98 +132,105 @@
     </div>
   </section>
 
-  <!-- 3. Social Proof -->
-  <section class="py-16 border-y border-border bg-surface/30">
-    <div class="max-w-6xl mx-auto px-6 lg:px-8">
-      <p class="text-center text-sm font-medium text-primary/60 mb-10">Trusted by 10,000+ thinkers, founders, and creators</p>
-      <div class="flex flex-wrap justify-center items-center gap-8 sm:gap-12 lg:gap-16 grayscale opacity-60">
-        <span class="text-lg font-semibold text-primary/80">Startup</span>
-        <span class="text-lg font-semibold text-primary/80">TechCorp</span>
-        <span class="text-lg font-semibold text-primary/80">BuildCo</span>
-        <span class="text-lg font-semibold text-primary/80">Flow</span>
-        <span class="text-lg font-semibold text-primary/80">Nexus</span>
-        <span class="text-lg font-semibold text-primary/80">Atlas</span>
+  <!-- Features -->
+  <section id="features" class="py-24 sm:py-32 bg-bg-secondary">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
+        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">Built for modern teams</h2>
+        <p class="text-lg text-text-secondary">Everything you need to run productive meetings without the manual work.</p>
+      </div>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft">
+          <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v3m0 0v-3m0 0V9a5 5 0 0110 0v2z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">Record & transcribe</h3>
+          <p class="text-text-secondary leading-relaxed">Crystal-clear recording with real-time transcription in 20+ languages.</p>
+        </div>
+        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft" style="transition-delay: 0.05s;">
+          <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">Smart summaries</h3>
+          <p class="text-text-secondary leading-relaxed">AI-generated summaries and key decisions so nothing gets lost.</p>
+        </div>
+        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft" style="transition-delay: 0.1s;">
+          <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
+            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </div>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">Action items</h3>
+          <p class="text-text-secondary leading-relaxed">Tasks and owners extracted automatically and synced to your tools.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 4. Features Section -->
-  <section id="features" class="py-24 lg:py-32">
-    <div class="max-w-6xl mx-auto px-6 lg:px-8">
-      <h2 class="fade-in text-3xl sm:text-4xl font-bold text-primary text-center mb-16">Everything you need to think clearly</h2>
+  <!-- How it works -->
+  <section id="how-it-works" class="py-24 sm:py-32">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
+        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">How it works</h2>
+        <p class="text-lg text-text-secondary">Join with one click. We handle the rest.</p>
+      </div>
       <div class="grid md:grid-cols-3 gap-8">
-        <div class="fade-in group p-8 rounded-2xl border border-border bg-white shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300">
-          <div class="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-colors">
-            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
-          </div>
-          <h3 class="text-xl font-semibold text-primary mb-3">Capture instantly</h3>
-          <p class="text-primary/70 leading-relaxed">Save ideas, notes, and thoughts in seconds.</p>
+        <div class="animate-fade-up text-center">
+          <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><span class="text-xl font-semibold text-accent">1</span></div>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">Join your meeting</h3>
+          <p class="text-text-secondary">Add MeetPilot to any Zoom, Meet, or Teams call. No plugins required.</p>
         </div>
-        <div class="fade-in group p-8 rounded-2xl border border-border bg-white shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style="transition-delay: 0.1s">
-          <div class="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-colors">
-            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-          </div>
-          <h3 class="text-xl font-semibold text-primary mb-3">AI organization</h3>
-          <p class="text-primary/70 leading-relaxed">Cortex automatically organizes everything intelligently.</p>
+        <div class="animate-fade-up text-center" style="transition-delay: 0.08s;">
+          <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><span class="text-xl font-semibold text-accent">2</span></div>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">We take notes</h3>
+          <p class="text-text-secondary">Transcription and summaries are generated in real time.</p>
         </div>
-        <div class="fade-in group p-8 rounded-2xl border border-border bg-white shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style="transition-delay: 0.2s">
-          <div class="w-12 h-12 rounded-xl bg-primary/5 flex items-center justify-center mb-6 group-hover:bg-accent/10 transition-colors">
-            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-          </div>
-          <h3 class="text-xl font-semibold text-primary mb-3">Find anything fast</h3>
-          <p class="text-primary/70 leading-relaxed">Instantly search and retrieve your knowledge.</p>
+        <div class="animate-fade-up text-center" style="transition-delay: 0.16s;">
+          <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><span class="text-xl font-semibold text-accent">3</span></div>
+          <h3 class="text-lg font-semibold text-text-primary mb-2">Share & follow up</h3>
+          <p class="text-text-secondary">Send notes and action items to your team or tools in one click.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 5. Product Demo Section -->
-  <section id="demo" class="py-24 lg:py-32 bg-surface/50">
-    <div class="max-w-6xl mx-auto px-6 lg:px-8">
-      <h2 class="fade-in text-3xl sm:text-4xl font-bold text-primary text-center mb-16">See Cortex in action</h2>
-      <div class="fade-in max-w-4xl mx-auto rounded-2xl border border-border bg-white shadow-card overflow-hidden">
-        <div class="flex">
-          <aside class="w-48 border-r border-border bg-surface/30 p-4">
-            <nav class="space-y-1">
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary text-white text-sm font-medium">Notes</a>
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary/70 hover:bg-white text-sm">Tasks</a>
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary/70 hover:bg-white text-sm">Ideas</a>
-              <a href="#" class="flex items-center gap-3 px-3 py-2 rounded-lg text-primary/70 hover:bg-white text-sm">Archive</a>
-            </nav>
-          </aside>
-          <main class="flex-1 p-6">
-            <div class="grid sm:grid-cols-2 gap-4 mb-6">
-              <div class="p-4 rounded-xl border border-border bg-white">
-                <div class="text-sm font-medium text-primary mb-2">Product strategy</div>
-                <div class="text-xs text-primary/60">Last edited 2h ago</div>
+  <!-- Dashboard preview -->
+  <section id="dashboard-preview" class="py-24 sm:py-32 bg-bg-secondary">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
+        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">One place for every meeting</h2>
+        <p class="text-lg text-text-secondary">Transcripts, summaries, and tasks in a clean dashboard.</p>
+      </div>
+      <div class="animate-fade-up rounded-2xl overflow-hidden border border-border bg-white shadow-soft" style="box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);">
+        <div class="bg-bg-secondary px-5 py-3 flex items-center gap-2 border-b border-border">
+          <span class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></span>
+          <span class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></span>
+          <span class="ml-3 text-text-secondary text-sm">app.meetpilot.ai</span>
+        </div>
+        <div class="flex min-h-[380px]">
+          <nav class="w-52 bg-white border-r border-border py-5 px-4">
+            <p class="text-xs font-medium text-text-secondary uppercase tracking-wider mb-4">Workspace</p>
+            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-accent/10 text-accent font-medium text-sm">Meetings</a>
+            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl text-text-secondary hover:bg-bg-secondary text-sm">Library</a>
+            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl text-text-secondary hover:bg-bg-secondary text-sm">Integrations</a>
+            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl text-text-secondary hover:bg-bg-secondary text-sm">Settings</a>
+          </nav>
+          <main class="flex-1 p-6 min-w-0">
+            <div class="flex gap-4 mb-6">
+              <div class="flex-1 rounded-xl border border-border bg-bg-secondary/50 p-4">
+                <p class="text-xs text-text-secondary mb-2">Transcript</p>
+                <p class="text-sm text-text-primary leading-relaxed">[00:00] Kickoff: Q2 planning. [00:15] Sarah: We need to finalize the roadmap by Friday. [00:32] Alex: I’ll have the design mockups ready. [00:48] Jordan: Marketing can support the launch campaign.</p>
               </div>
-              <div class="p-4 rounded-xl border border-border bg-white">
-                <div class="text-sm font-medium text-primary mb-2">Meeting notes</div>
-                <div class="text-xs text-primary/60">Last edited 5h ago</div>
+              <div class="w-64 rounded-xl border border-border bg-white p-4 shadow-soft shrink-0">
+                <p class="text-xs font-medium text-text-secondary mb-2">Summary</p>
+                <p class="text-sm text-text-primary">Q2 planning aligned. Roadmap by Friday, designs from Alex, marketing support confirmed.</p>
               </div>
             </div>
-            <div class="p-4 rounded-xl border border-accent/20 bg-accent/5 mb-6">
-              <div class="flex items-center gap-2 text-sm font-medium text-accent mb-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                AI suggestions
-              </div>
-              <p class="text-xs text-primary/70">3 related notes found. Consider linking "Product strategy" with "Q1 goals".</p>
-            </div>
-            <div>
-              <div class="text-sm font-medium text-primary mb-3">Tasks</div>
+            <div class="rounded-xl border border-border bg-white p-4 shadow-soft">
+              <p class="text-xs font-medium text-text-secondary mb-3">Action items</p>
               <ul class="space-y-2">
-                <li class="flex items-center gap-3 text-sm text-primary/80">
-                  <input type="checkbox" class="rounded border-border text-accent" />
-                  <span>Review product roadmap</span>
-                </li>
-                <li class="flex items-center gap-3 text-sm text-primary/80">
-                  <input type="checkbox" class="rounded border-border text-accent" checked />
-                  <span class="line-through text-primary/50">Send weekly update</span>
-                </li>
-                <li class="flex items-center gap-3 text-sm text-primary/80">
-                  <input type="checkbox" class="rounded border-border text-accent" />
-                  <span>Prepare demo for investors</span>
-                </li>
+                <li class="flex items-center gap-3 text-sm"><span class="w-4 h-4 rounded border border-border"></span> Finalize Q2 roadmap — Sarah (Fri)</li>
+                <li class="flex items-center gap-3 text-sm"><span class="w-4 h-4 rounded border border-border"></span> Design mockups — Alex</li>
+                <li class="flex items-center gap-3 text-sm"><span class="w-4 h-4 rounded border border-border"></span> Launch campaign support — Marketing</li>
               </ul>
             </div>
           </main>
@@ -209,76 +239,73 @@
     </div>
   </section>
 
-  <!-- 6. How It Works -->
-  <section id="pricing" class="py-24 lg:py-32">
-    <div class="max-w-6xl mx-auto px-6 lg:px-8">
-      <h2 class="fade-in text-3xl sm:text-4xl font-bold text-primary text-center mb-20">How it works</h2>
-      <div class="grid md:grid-cols-3 gap-12 lg:gap-16">
-        <div class="fade-in text-center">
-          <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-semibold mx-auto mb-6">1</div>
-          <h3 class="text-xl font-semibold text-primary mb-3">Capture your thoughts</h3>
-          <p class="text-primary/70">Add notes and ideas from any device. Cortex syncs instantly.</p>
+  <!-- Pricing teaser -->
+  <section id="pricing" class="py-24 sm:py-32">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8">
+      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
+        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">Simple pricing</h2>
+        <p class="text-lg text-text-secondary">Start free. Scale as your team grows.</p>
+      </div>
+      <div class="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
+        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft text-center">
+          <p class="font-semibold text-text-primary mb-1">Free</p>
+          <p class="text-2xl font-semibold text-text-primary mb-4">$0<span class="text-base font-normal text-text-secondary">/mo</span></p>
+          <p class="text-sm text-text-secondary">5 meetings/mo, basic summaries</p>
         </div>
-        <div class="fade-in text-center" style="transition-delay: 0.1s">
-          <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-semibold mx-auto mb-6">2</div>
-          <h3 class="text-xl font-semibold text-primary mb-3">AI organizes automatically</h3>
-          <p class="text-primary/70">Our AI tags, links, and structures your knowledge for you.</p>
+        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border-2 border-accent shadow-soft text-center relative" style="transition-delay: 0.05s;">
+          <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-accent text-white text-xs font-medium">Popular</span>
+          <p class="font-semibold text-text-primary mb-1">Pro</p>
+          <p class="text-2xl font-semibold text-accent mb-4">$12<span class="text-base font-normal text-text-secondary">/mo</span></p>
+          <p class="text-sm text-text-secondary">Unlimited meetings, AI summaries, integrations</p>
         </div>
-        <div class="fade-in text-center" style="transition-delay: 0.2s">
-          <div class="w-14 h-14 rounded-full bg-primary text-white flex items-center justify-center text-xl font-semibold mx-auto mb-6">3</div>
-          <h3 class="text-xl font-semibold text-primary mb-3">Access anytime, anywhere</h3>
-          <p class="text-primary/70">Search and retrieve anything in seconds, on any device.</p>
+        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft text-center" style="transition-delay: 0.1s;">
+          <p class="font-semibold text-text-primary mb-1">Team</p>
+          <p class="text-2xl font-semibold text-text-primary mb-4">Custom</p>
+          <p class="text-sm text-text-secondary">SSO, API, dedicated support</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 7. CTA Section -->
-  <section id="cta" class="py-24 lg:py-32 bg-[#eff6ff]">
-    <div class="max-w-3xl mx-auto px-6 lg:px-8 text-center">
-      <h2 class="fade-in text-3xl sm:text-4xl font-bold text-primary mb-4">Stop relying on memory.</h2>
-      <p class="fade-in text-lg text-primary/70 mb-10">Start building your second brain today.</p>
-      <a href="#" class="fade-in inline-flex items-center justify-center px-8 py-4 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-all duration-200 shadow-soft hover:shadow-card">Get Started</a>
+  <!-- CTA -->
+  <section id="cta" class="py-24 sm:py-32 bg-bg-secondary">
+    <div class="max-w-3xl mx-auto px-6 sm:px-8 text-center animate-fade-up">
+      <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">Run smarter meetings with AI</h2>
+      <p class="text-lg text-text-secondary mb-10">Join thousands of teams who save hours every week.</p>
+      <a href="#" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-btn bg-accent text-white font-medium text-[15px]">Get Started</a>
     </div>
   </section>
 
-  <!-- 8. Footer -->
+  <!-- Footer -->
   <footer id="contact" class="py-12 border-t border-border">
-    <div class="max-w-6xl mx-auto px-6 lg:px-8">
-      <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-        <a href="#" class="text-lg font-semibold text-primary">Cortex</a>
-        <div class="flex items-center gap-8">
-          <a href="#" class="text-sm text-primary/70 hover:text-primary transition-colors">Privacy</a>
-          <a href="#" class="text-sm text-primary/70 hover:text-primary transition-colors">Terms</a>
-          <a href="#contact" class="text-sm text-primary/70 hover:text-primary transition-colors">Contact</a>
-        </div>
+    <div class="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <a href="#" class="text-lg font-semibold text-text-primary">MeetPilot</a>
+      <div class="flex items-center gap-8 text-sm text-text-secondary">
+        <a href="#features" class="link-hover">Features</a>
+        <a href="#pricing" class="link-hover">Pricing</a>
+        <a href="#" class="link-hover">Privacy</a>
+        <a href="#" class="link-hover">Terms</a>
       </div>
-      <p class="mt-8 text-center sm:text-left text-sm text-primary/50">© 2025 Cortex. All rights reserved.</p>
     </div>
   </footer>
 
   <script>
-    (function() {
-      const navbar = document.getElementById('navbar');
-      function onScroll() {
-        if (window.scrollY > 20) {
-          navbar.classList.remove('nav-transparent');
-          navbar.classList.add('nav-solid');
-        } else {
-          navbar.classList.add('nav-transparent');
-          navbar.classList.remove('nav-solid');
-        }
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-
-      const fadeElements = document.querySelectorAll('.fade-in');
-      const fadeObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+    (function () {
+      const observerOptions = { root: null, rootMargin: '0px', threshold: 0.08 };
+      const observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
           if (entry.isIntersecting) entry.target.classList.add('visible');
         });
-      }, { rootMargin: '0px 0px -40px 0px', threshold: 0 });
-      fadeElements.forEach(el => fadeObserver.observe(el));
+      }, observerOptions);
+
+      document.querySelectorAll('.animate-fade-up').forEach(function (el) {
+        observer.observe(el);
+      });
+
+      // Initial visible for above-the-fold
+      document.querySelectorAll('.hero .animate-fade-up, section:first-of-type .animate-fade-up').forEach(function (el) {
+        el.classList.add('visible');
+      });
     })();
   </script>
 </body>
