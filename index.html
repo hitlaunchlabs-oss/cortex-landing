@@ -1,311 +1,665 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MeetPilot – Your AI Meeting Assistant</title>
-  <meta name="description" content="Record, transcribe, summarize, and extract action items automatically. Run smarter meetings with AI." />
-  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            bg: '#FFFFFF',
+            background: '#FFFFFF',
             'bg-secondary': '#F5F5F7',
             'text-primary': '#111111',
             'text-secondary': '#6E6E73',
             accent: '#0071E3',
-            border: '#E5E5E7',
+            'accent-hover': '#0077ED',
+            border: '#E5E5EA',
           },
-          fontFamily: {
-            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'sans-serif'],
-          },
-          borderRadius: {
-            card: '14px',
-            btn: '12px',
-          },
-          boxShadow: {
-            soft: '0 4px 20px rgba(0,0,0,0.05)',
-            'soft-hover': '0 8px 30px rgba(0,0,0,0.08)',
-            'btn-glow': '0 0 0 4px rgba(0, 113, 227, 0.2)',
-          },
-          transitionDuration: {
-            smooth: '400ms',
-          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          spacing: { '18': '4.5rem', '22': '5.5rem', '35': '8.75rem', '140': '35rem' },
         },
       },
     };
   </script>
   <style>
-    * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; }
-    body { background-color: #FFFFFF; color: #111111; }
-    .animate-fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.4s ease, transform 0.4s ease; }
-    .animate-fade-up.visible { opacity: 1; transform: translateY(0); }
-    .card-hover { transition: all 0.4s ease; }
-    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
-    .btn-primary { transition: all 0.4s ease; }
-    .btn-primary:hover { transform: scale(1.02); box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.2); }
-    .btn-secondary { transition: all 0.4s ease; }
-    .btn-secondary:hover { transform: scale(1.02); }
-    .mockup-float { animation: float 6s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-    .nav-blur { background: rgba(255,255,255,0.8); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); }
-    .link-hover { transition: color 0.2s ease; }
-    .link-hover:hover { color: #0071E3; }
+    :root {
+      --bg: #FFFFFF;
+      --bg-secondary: #F5F5F7;
+      --text-primary: #111111;
+      --text-secondary: #6E6E73;
+      --accent: #0071E3;
+      --accent-hover: #0077ED;
+      --border: #E5E5EA;
+      --nav-bg: rgba(255, 255, 255, 0.8);
+      --nav-border: rgba(0, 0, 0, 0.06);
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+      --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.08);
+    }
+    .dark {
+      --bg: #000000;
+      --bg-secondary: #1C1C1E;
+      --text-primary: #F5F5F7;
+      --text-secondary: #AEAEB2;
+      --accent: #0A84FF;
+      --accent-hover: #409CFF;
+      --border: #38383A;
+      --nav-bg: rgba(0, 0, 0, 0.8);
+      --nav-border: rgba(255, 255, 255, 0.08);
+      --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      --shadow-hover: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Navbar */
+    .nav-bar {
+      height: 72px;
+      transition: background-color 0.35s ease, backdrop-filter 0.35s ease, box-shadow 0.35s ease;
+    }
+    .nav-bar.scrolled {
+      background-color: var(--nav-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 1px 0 var(--nav-border);
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease, border-color 0.3s ease;
+    }
+    .theme-toggle:hover {
+      transform: scale(1.05);
+      background: var(--bg-secondary);
+    }
+    .theme-toggle .icon-sun { display: none; }
+    .theme-toggle .icon-moon { display: block; }
+    .dark .theme-toggle .icon-sun { display: block; }
+    .dark .theme-toggle .icon-moon { display: none; }
+
+    /* Mobile menu */
+    .mobile-menu {
+      position: fixed;
+      top: 72px;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem 1.5rem;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+      z-index: 40;
+      box-shadow: var(--shadow);
+    }
+    .mobile-menu.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .mobile-menu a {
+      display: block;
+      padding: 12px 0;
+      color: var(--text-primary);
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-menu a:last-of-type { border-bottom: none; }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-primary);
+      margin: 5px 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+    /* Hero typography */
+    .hero-heading {
+      font-size: clamp(2rem, 8vw, 64px);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 20px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 500;
+      font-size: 16px;
+      transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: scale(1.04);
+      box-shadow: 0 10px 40px rgba(10, 132, 255, 0.35);
+    }
+    .dark .btn-primary:hover { box-shadow: 0 10px 40px rgba(10, 132, 255, 0.25); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-weight: 500;
+      font-size: 16px;
+      transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    }
+    .btn-secondary:hover {
+      border-color: var(--text-secondary);
+      background: var(--bg-secondary);
+      transform: scale(1.04);
+    }
+
+    /* Dashboard mockup */
+    .dashboard-container {
+      background: var(--bg);
+      border-radius: 16px;
+      box-shadow: var(--shadow), 0 0 0 1px var(--border);
+      overflow: hidden;
+    }
+    .dashboard-sidebar-item {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: var(--text-secondary);
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+    .dashboard-sidebar-item.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+    .dashboard-sidebar-item:hover:not(.active) {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    /* Floating cards - hidden on small screens */
+    .float-card {
+      animation: float 6s ease-in-out infinite;
+    }
+    @media (max-width: 1024px) {
+      .float-card { display: none !important; }
+    }
+    .float-card.delay-1 { animation-delay: 0s; }
+    .float-card.delay-2 { animation-delay: -2s; }
+    .float-card.delay-3 { animation-delay: -4s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    /* Scroll-triggered animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Feature cards */
+    .feature-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Section spacing - responsive */
+    .section-spacing {
+      padding-top: clamp(60px, 15vw, 140px);
+      padding-bottom: clamp(60px, 15vw, 140px);
+    }
+    .content-max {
+      max-width: 1200px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Browser mockup */
+    .browser-bar {
+      height: 48px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 12px 12px 0 0;
+    }
+    .browser-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    .browser-url {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* Checkbox styling */
+    .task-checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .task-checkbox.checked {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+    .task-checkbox.checked::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+      margin-bottom: 3px;
+    }
+
+    /* Theme-aware utility classes */
+    .bg-theme { background: var(--bg); }
+    .bg-theme-secondary { background: var(--bg-secondary); }
+    .text-theme-primary { color: var(--text-primary); }
+    .text-theme-secondary { color: var(--text-secondary); }
+    .border-theme { border-color: var(--border); }
   </style>
 </head>
 <body class="antialiased">
   <!-- Navbar -->
-  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 nav-blur border-b border-border/60">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8 flex items-center justify-between h-16">
-      <a href="#" class="text-xl font-semibold text-text-primary tracking-tight">MeetPilot</a>
-      <div class="hidden md:flex items-center gap-8">
-        <a href="#features" class="text-text-secondary link-hover text-[15px]">Features</a>
-        <a href="#how-it-works" class="text-text-secondary link-hover text-[15px]">How it works</a>
-        <a href="#pricing" class="text-text-secondary link-hover text-[15px]">Pricing</a>
-        <a href="#contact" class="text-text-secondary link-hover text-[15px]">Contact</a>
-      </div>
-      <a href="#cta" class="inline-flex items-center justify-center px-5 py-2.5 rounded-btn bg-accent text-white text-[15px] font-medium btn-primary">Get Started</a>
+  <header class="nav-bar fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 md:px-12">
+    <a href="#" class="text-theme-primary font-semibold text-lg sm:text-xl">MeetPilot</a>
+    <nav class="hidden md:flex items-center gap-6 lg:gap-8">
+      <a href="#features" class="text-theme-secondary hover:text-theme-primary text-[15px] font-medium transition-colors duration-300">Features</a>
+      <a href="#how-it-works" class="text-theme-secondary hover:text-theme-primary text-[15px] font-medium transition-colors duration-300">How it works</a>
+      <a href="#pricing" class="text-theme-secondary hover:text-theme-primary text-[15px] font-medium transition-colors duration-300">Pricing</a>
+      <a href="#contact" class="text-theme-secondary hover:text-theme-primary text-[15px] font-medium transition-colors duration-300">Contact</a>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+        <svg class="icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+      </button>
+      <a href="#cta" class="btn-primary ml-2">Get Started</a>
+    </nav>
+    <div class="flex md:hidden items-center gap-2">
+      <button type="button" id="theme-toggle-mobile" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+        <svg class="icon-moon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+      </button>
+      <button type="button" id="hamburger" class="hamburger p-2" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
-  </nav>
+  </header>
+  <div id="mobile-menu" class="mobile-menu md:hidden">
+    <a href="#features" class="nav-mobile-link">Features</a>
+    <a href="#how-it-works" class="nav-mobile-link">How it works</a>
+    <a href="#pricing" class="nav-mobile-link">Pricing</a>
+    <a href="#contact" class="nav-mobile-link">Contact</a>
+    <a href="#cta" class="nav-mobile-link font-semibold">Get Started</a>
+  </div>
 
-  <!-- Hero -->
-  <section class="hero pt-32 pb-24 sm:pt-40 sm:pb-32 px-6 sm:px-8 max-w-6xl mx-auto">
-    <div class="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
-      <div class="animate-fade-up">
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-semibold text-text-primary tracking-tight leading-[1.1] mb-6">
-          Your AI meeting assistant
-        </h1>
-        <p class="text-lg sm:text-xl text-text-secondary max-w-xl leading-relaxed mb-10">
-          Record, transcribe, summarize, and extract action items automatically.
-        </p>
-        <div class="flex flex-wrap gap-4">
-          <a href="#cta" class="btn-primary inline-flex items-center justify-center px-6 py-3.5 rounded-btn bg-accent text-white font-medium text-[15px]">Get Started</a>
-          <a href="#dashboard-preview" class="btn-secondary inline-flex items-center justify-center px-6 py-3.5 rounded-btn bg-bg-secondary text-text-primary font-medium text-[15px] border border-border">Watch Demo</a>
-        </div>
-      </div>
-      <div class="animate-fade-up mockup-float" style="transition-delay: 0.1s;">
-        <!-- Dashboard mockup -->
-        <div class="rounded-2xl overflow-hidden shadow-soft border border-border bg-white" style="box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);">
-          <div class="bg-bg-secondary/80 px-4 py-3 flex items-center gap-2 border-b border-border">
-            <span class="w-3 h-3 rounded-full bg-[#FF5F57]"></span>
-            <span class="w-3 h-3 rounded-full bg-[#FEBC2E]"></span>
-            <span class="w-3 h-3 rounded-full bg-[#28C840]"></span>
-            <span class="ml-4 text-text-secondary text-sm">MeetPilot — Team standup</span>
-          </div>
-          <div class="flex min-h-[340px]">
-            <aside class="w-14 sm:w-16 bg-bg-secondary/50 border-r border-border flex flex-col items-center py-4 gap-2">
-              <div class="w-9 h-9 rounded-xl bg-accent/10 flex items-center justify-center"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div>
-              <div class="w-9 h-9 rounded-xl bg-border/60"></div>
-              <div class="w-9 h-9 rounded-xl bg-border/60"></div>
-              <div class="w-9 h-9 rounded-xl bg-border/60"></div>
-            </aside>
-            <div class="flex-1 p-4 sm:p-5 flex flex-col gap-4 min-w-0">
-              <div class="flex-1 rounded-xl bg-bg-secondary/40 p-3 sm:p-4 border border-border/80 overflow-hidden">
-                <p class="text-text-secondary text-xs sm:text-sm leading-relaxed">
-                  <span class="text-text-primary font-medium">[00:12]</span> Sarah: Let’s align on Q2 goals by Friday.<br/>
-                  <span class="text-text-primary font-medium">[00:28]</span> Alex: I’ll send the design specs by EOD.<br/>
-                  <span class="text-text-primary font-medium">[00:45]</span> Jordan: Can we move the launch to next week?
-                </p>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <div class="rounded-xl bg-white border border-border p-3 shadow-soft">
-                  <p class="text-xs font-medium text-text-secondary mb-1">Summary</p>
-                  <p class="text-sm text-text-primary">Q2 goals, design specs, launch timeline.</p>
-                </div>
-                <div class="rounded-xl bg-white border border-border p-3 shadow-soft">
-                  <p class="text-xs font-medium text-text-secondary mb-2">Action items</p>
-                  <ul class="text-sm text-text-primary space-y-1">
-                    <li>• Align Q2 goals — Sarah</li>
-                    <li>• Design specs — Alex</li>
-                  </ul>
-                </div>
-              </div>
+  <main>
+    <!-- Hero -->
+    <section class="section-spacing pt-28 sm:pt-32 md:pt-40 lg:pt-[200px] pb-16 sm:pb-20 lg:pb-[140px] px-4 sm:px-6 md:px-12">
+      <div class="content-max px-0">
+        <div class="grid lg:grid-cols-2 gap-10 sm:gap-16 lg:gap-20 items-center">
+          <div class="reveal text-center lg:text-left">
+            <h1 class="hero-heading text-theme-primary mb-4 sm:mb-6">Your AI meeting assistant</h1>
+            <p class="hero-sub mb-8 sm:mb-10 max-w-xl mx-auto lg:mx-0">
+              Automatically record, transcribe, summarize, and extract action items from your meetings.
+            </p>
+            <div class="flex flex-wrap gap-3 sm:gap-4 justify-center lg:justify-start">
+              <a href="#cta" class="btn-primary inline-block">Get Started</a>
+              <a href="#" class="btn-secondary inline-block">Watch Demo</a>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section id="features" class="py-24 sm:py-32 bg-bg-secondary">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8">
-      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
-        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">Built for modern teams</h2>
-        <p class="text-lg text-text-secondary">Everything you need to run productive meetings without the manual work.</p>
-      </div>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft">
-          <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v3m0 0v-3m0 0V9a5 5 0 0110 0v2z"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold text-text-primary mb-2">Record & transcribe</h3>
-          <p class="text-text-secondary leading-relaxed">Crystal-clear recording with real-time transcription in 20+ languages.</p>
-        </div>
-        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft" style="transition-delay: 0.05s;">
-          <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold text-text-primary mb-2">Smart summaries</h3>
-          <p class="text-text-secondary leading-relaxed">AI-generated summaries and key decisions so nothing gets lost.</p>
-        </div>
-        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft" style="transition-delay: 0.1s;">
-          <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-          </div>
-          <h3 class="text-lg font-semibold text-text-primary mb-2">Action items</h3>
-          <p class="text-text-secondary leading-relaxed">Tasks and owners extracted automatically and synced to your tools.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section id="how-it-works" class="py-24 sm:py-32">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8">
-      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
-        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">How it works</h2>
-        <p class="text-lg text-text-secondary">Join with one click. We handle the rest.</p>
-      </div>
-      <div class="grid md:grid-cols-3 gap-8">
-        <div class="animate-fade-up text-center">
-          <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><span class="text-xl font-semibold text-accent">1</span></div>
-          <h3 class="text-lg font-semibold text-text-primary mb-2">Join your meeting</h3>
-          <p class="text-text-secondary">Add MeetPilot to any Zoom, Meet, or Teams call. No plugins required.</p>
-        </div>
-        <div class="animate-fade-up text-center" style="transition-delay: 0.08s;">
-          <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><span class="text-xl font-semibold text-accent">2</span></div>
-          <h3 class="text-lg font-semibold text-text-primary mb-2">We take notes</h3>
-          <p class="text-text-secondary">Transcription and summaries are generated in real time.</p>
-        </div>
-        <div class="animate-fade-up text-center" style="transition-delay: 0.16s;">
-          <div class="w-14 h-14 rounded-2xl bg-accent/10 flex items-center justify-center mx-auto mb-4"><span class="text-xl font-semibold text-accent">3</span></div>
-          <h3 class="text-lg font-semibold text-text-primary mb-2">Share & follow up</h3>
-          <p class="text-text-secondary">Send notes and action items to your team or tools in one click.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Dashboard preview -->
-  <section id="dashboard-preview" class="py-24 sm:py-32 bg-bg-secondary">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8">
-      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
-        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">One place for every meeting</h2>
-        <p class="text-lg text-text-secondary">Transcripts, summaries, and tasks in a clean dashboard.</p>
-      </div>
-      <div class="animate-fade-up rounded-2xl overflow-hidden border border-border bg-white shadow-soft" style="box-shadow: 0 4px 20px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);">
-        <div class="bg-bg-secondary px-5 py-3 flex items-center gap-2 border-b border-border">
-          <span class="w-2.5 h-2.5 rounded-full bg-[#FF5F57]"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-[#FEBC2E]"></span>
-          <span class="w-2.5 h-2.5 rounded-full bg-[#28C840]"></span>
-          <span class="ml-3 text-text-secondary text-sm">app.meetpilot.ai</span>
-        </div>
-        <div class="flex min-h-[380px]">
-          <nav class="w-52 bg-white border-r border-border py-5 px-4">
-            <p class="text-xs font-medium text-text-secondary uppercase tracking-wider mb-4">Workspace</p>
-            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-accent/10 text-accent font-medium text-sm">Meetings</a>
-            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl text-text-secondary hover:bg-bg-secondary text-sm">Library</a>
-            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl text-text-secondary hover:bg-bg-secondary text-sm">Integrations</a>
-            <a href="#" class="flex items-center gap-3 py-2.5 px-3 rounded-xl text-text-secondary hover:bg-bg-secondary text-sm">Settings</a>
-          </nav>
-          <main class="flex-1 p-6 min-w-0">
-            <div class="flex gap-4 mb-6">
-              <div class="flex-1 rounded-xl border border-border bg-bg-secondary/50 p-4">
-                <p class="text-xs text-text-secondary mb-2">Transcript</p>
-                <p class="text-sm text-text-primary leading-relaxed">[00:00] Kickoff: Q2 planning. [00:15] Sarah: We need to finalize the roadmap by Friday. [00:32] Alex: I’ll have the design mockups ready. [00:48] Jordan: Marketing can support the launch campaign.</p>
-              </div>
-              <div class="w-64 rounded-xl border border-border bg-white p-4 shadow-soft shrink-0">
-                <p class="text-xs font-medium text-text-secondary mb-2">Summary</p>
-                <p class="text-sm text-text-primary">Q2 planning aligned. Roadmap by Friday, designs from Alex, marketing support confirmed.</p>
+          <div class="relative reveal order-first lg:order-none" style="transition-delay: 0.15s;">
+            <!-- Floating cards -->
+            <div class="absolute -top-4 -right-4 float-card delay-1 z-10 w-40 bg-theme rounded-2xl border border-theme p-4" style="box-shadow: var(--shadow);">
+              <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Transcript</div>
+              <div class="space-y-1.5 text-sm text-theme-primary">
+                <div class="h-2 rounded w-full opacity-30" style="background: var(--border);"></div>
+                <div class="h-2 rounded w-4/5 opacity-30" style="background: var(--border);"></div>
+                <div class="h-2 rounded w-3/4 opacity-30" style="background: var(--border);"></div>
               </div>
             </div>
-            <div class="rounded-xl border border-border bg-white p-4 shadow-soft">
-              <p class="text-xs font-medium text-text-secondary mb-3">Action items</p>
-              <ul class="space-y-2">
-                <li class="flex items-center gap-3 text-sm"><span class="w-4 h-4 rounded border border-border"></span> Finalize Q2 roadmap — Sarah (Fri)</li>
-                <li class="flex items-center gap-3 text-sm"><span class="w-4 h-4 rounded border border-border"></span> Design mockups — Alex</li>
-                <li class="flex items-center gap-3 text-sm"><span class="w-4 h-4 rounded border border-border"></span> Launch campaign support — Marketing</li>
+            <div class="absolute -bottom-2 -left-2 float-card delay-2 z-10 w-44 bg-theme rounded-2xl border border-theme p-4" style="box-shadow: var(--shadow);">
+              <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Summary</div>
+              <ul class="space-y-1.5 text-sm text-theme-primary">
+                <li class="flex gap-2"><span style="color: var(--accent);">•</span> Key decisions</li>
+                <li class="flex gap-2"><span style="color: var(--accent);">•</span> Next steps</li>
               </ul>
             </div>
-          </main>
+            <div class="absolute top-1/2 -right-6 float-card delay-3 z-10 w-36 bg-theme rounded-2xl border border-theme p-3" style="box-shadow: var(--shadow);">
+              <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Tasks</div>
+              <div class="flex items-center gap-2 text-sm">
+                <div class="task-checkbox checked"></div>
+                <span class="text-theme-secondary line-through">Review PR</span>
+              </div>
+              <div class="flex items-center gap-2 text-sm mt-1">
+                <div class="task-checkbox"></div>
+                <span class="text-theme-primary">Send follow-up</span>
+              </div>
+            </div>
+            <!-- Dashboard mockup -->
+            <div class="dashboard-container relative overflow-x-auto">
+              <div class="flex min-h-[320px] sm:min-h-[380px] lg:min-h-[420px]">
+                <!-- Sidebar - hidden on smallest, compact on small -->
+                <aside class="w-36 sm:w-44 lg:w-48 bg-theme-secondary border-r border-theme p-3 sm:p-4 flex flex-col gap-1 flex-shrink-0">
+                  <div class="dashboard-sidebar-item active font-medium">Meetings</div>
+                  <div class="dashboard-sidebar-item">Today</div>
+                  <div class="dashboard-sidebar-item">Yesterday</div>
+                  <div class="dashboard-sidebar-item mt-auto">Settings</div>
+                </aside>
+                <!-- Main content -->
+                <div class="flex-1 p-4 sm:p-6 flex flex-col gap-3 sm:gap-5 min-w-0">
+                  <div>
+                    <h3 class="text-base sm:text-lg font-semibold text-theme-primary mb-1">Weekly Product Sync</h3>
+                    <p class="text-xs sm:text-sm text-theme-secondary">Mon, Feb 23 · 45 min</p>
+                  </div>
+                  <div class="flex-1 grid gap-3 sm:gap-4">
+                    <div class="bg-theme-secondary rounded-xl p-3 sm:p-4 border border-theme">
+                      <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2 sm:mb-3">Live transcript</div>
+                      <div class="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-theme-primary leading-relaxed">
+                        <p><span class="text-theme-secondary">Sarah:</span> Let's review the Q1 roadmap and align on priorities.</p>
+                        <p><span class="text-theme-secondary">Mike:</span> I'll have the design mockups ready by Wednesday.</p>
+                        <p class="hidden sm:block"><span class="text-theme-secondary">Alex:</span> We should schedule a follow-up for the API integration.</p>
+                      </div>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                      <div class="bg-theme rounded-xl p-3 sm:p-4 border border-theme">
+                        <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Summary</div>
+                        <ul class="space-y-1.5 text-xs sm:text-sm text-theme-primary">
+                          <li class="flex gap-2"><span style="color: var(--accent);">•</span> Q1 roadmap reviewed</li>
+                          <li class="flex gap-2"><span style="color: var(--accent);">•</span> Design mockups due Wed</li>
+                          <li class="flex gap-2"><span style="color: var(--accent);">•</span> API follow-up needed</li>
+                        </ul>
+                      </div>
+                      <div class="bg-theme rounded-xl p-3 sm:p-4 border border-theme">
+                        <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Action items</div>
+                        <div class="space-y-2">
+                          <label class="flex items-center gap-2 text-xs sm:text-sm cursor-pointer">
+                            <div class="task-checkbox checked"></div>
+                            <span class="text-theme-secondary line-through">Review PR #234</span>
+                          </label>
+                          <label class="flex items-center gap-2 text-xs sm:text-sm cursor-pointer">
+                            <div class="task-checkbox"></div>
+                            <span class="text-theme-primary">Send API specs to Alex</span>
+                          </label>
+                          <label class="flex items-center gap-2 text-xs sm:text-sm cursor-pointer">
+                            <div class="task-checkbox"></div>
+                            <span class="text-theme-primary">Schedule integration call</span>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Pricing teaser -->
-  <section id="pricing" class="py-24 sm:py-32">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8">
-      <div class="text-center max-w-2xl mx-auto mb-16 animate-fade-up">
-        <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">Simple pricing</h2>
-        <p class="text-lg text-text-secondary">Start free. Scale as your team grows.</p>
+    <!-- Features -->
+    <section id="features" class="section-spacing bg-theme-secondary px-4 sm:px-6 md:px-12">
+      <div class="content-max">
+        <div class="text-center mb-12 sm:mb-16 lg:mb-20 reveal">
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-theme-primary tracking-tight mb-3 sm:mb-4">Everything you need</h2>
+          <p class="text-base sm:text-lg md:text-xl text-theme-secondary max-w-2xl mx-auto px-2">MeetPilot handles the busywork so you can focus on the conversation.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div class="feature-card reveal bg-theme rounded-2xl p-6 sm:p-8 border border-theme" style="box-shadow: var(--shadow);">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 sm:mb-6" style="background: rgba(10, 132, 255, 0.15);"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></div>
+            <h3 class="text-lg sm:text-xl font-semibold text-theme-primary mb-2 sm:mb-3">Record & transcribe</h3>
+            <p class="text-theme-secondary leading-relaxed text-sm sm:text-base">Every word captured in real time. Join Zoom or Google Meet and we'll handle the rest—no extra steps.</p>
+          </div>
+          <div class="feature-card reveal bg-theme rounded-2xl p-6 sm:p-8 border border-theme" style="box-shadow: var(--shadow); transition-delay: 0.1s;">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 sm:mb-6" style="background: rgba(10, 132, 255, 0.15);"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></div>
+            <h3 class="text-lg sm:text-xl font-semibold text-theme-primary mb-2 sm:mb-3">Smart summaries</h3>
+            <p class="text-theme-secondary leading-relaxed text-sm sm:text-base">AI-generated summaries with key decisions, next steps, and follow-ups. Skim in seconds, not minutes.</p>
+          </div>
+          <div class="feature-card reveal bg-theme rounded-2xl p-6 sm:p-8 border border-theme sm:col-span-2 lg:col-span-1" style="box-shadow: var(--shadow); transition-delay: 0.2s;">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 sm:mb-6" style="background: rgba(10, 132, 255, 0.15);"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg></div>
+            <h3 class="text-lg sm:text-xl font-semibold text-theme-primary mb-2 sm:mb-3">Action items</h3>
+            <p class="text-theme-secondary leading-relaxed text-sm sm:text-base">Tasks and owners extracted automatically. Sync to your tools or use our built-in task list.</p>
+          </div>
+        </div>
       </div>
-      <div class="grid sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft text-center">
-          <p class="font-semibold text-text-primary mb-1">Free</p>
-          <p class="text-2xl font-semibold text-text-primary mb-4">$0<span class="text-base font-normal text-text-secondary">/mo</span></p>
-          <p class="text-sm text-text-secondary">5 meetings/mo, basic summaries</p>
-        </div>
-        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border-2 border-accent shadow-soft text-center relative" style="transition-delay: 0.05s;">
-          <span class="absolute -top-2.5 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-accent text-white text-xs font-medium">Popular</span>
-          <p class="font-semibold text-text-primary mb-1">Pro</p>
-          <p class="text-2xl font-semibold text-accent mb-4">$12<span class="text-base font-normal text-text-secondary">/mo</span></p>
-          <p class="text-sm text-text-secondary">Unlimited meetings, AI summaries, integrations</p>
-        </div>
-        <div class="card-hover animate-fade-up rounded-2xl bg-white p-8 border border-border shadow-soft text-center" style="transition-delay: 0.1s;">
-          <p class="font-semibold text-text-primary mb-1">Team</p>
-          <p class="text-2xl font-semibold text-text-primary mb-4">Custom</p>
-          <p class="text-sm text-text-secondary">SSO, API, dedicated support</p>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- CTA -->
-  <section id="cta" class="py-24 sm:py-32 bg-bg-secondary">
-    <div class="max-w-3xl mx-auto px-6 sm:px-8 text-center animate-fade-up">
-      <h2 class="text-3xl sm:text-4xl font-semibold text-text-primary tracking-tight mb-4">Run smarter meetings with AI</h2>
-      <p class="text-lg text-text-secondary mb-10">Join thousands of teams who save hours every week.</p>
-      <a href="#" class="btn-primary inline-flex items-center justify-center px-8 py-4 rounded-btn bg-accent text-white font-medium text-[15px]">Get Started</a>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer id="contact" class="py-12 border-t border-border">
-    <div class="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
-      <a href="#" class="text-lg font-semibold text-text-primary">MeetPilot</a>
-      <div class="flex items-center gap-8 text-sm text-text-secondary">
-        <a href="#features" class="link-hover">Features</a>
-        <a href="#pricing" class="link-hover">Pricing</a>
-        <a href="#" class="link-hover">Privacy</a>
-        <a href="#" class="link-hover">Terms</a>
+    <!-- Product showcase -->
+    <section class="section-spacing px-4 sm:px-6 md:px-12">
+      <div class="content-max">
+        <div class="text-center mb-10 sm:mb-16 reveal">
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-theme-primary tracking-tight mb-3 sm:mb-4">One place for every meeting</h2>
+          <p class="text-base sm:text-lg md:text-xl text-theme-secondary max-w-2xl mx-auto px-2">Your full meeting workspace—transcripts, summaries, and tasks—in a single, beautiful dashboard.</p>
+        </div>
+        <div class="reveal overflow-hidden rounded-xl">
+          <div class="browser-bar flex items-center gap-2 sm:gap-4 px-3 sm:px-4">
+            <div class="browser-dots flex gap-2 flex-shrink-0">
+              <span class="bg-[#FF5F57]"></span>
+              <span class="bg-[#FEBC2E]"></span>
+              <span class="bg-[#28C840]"></span>
+            </div>
+            <div class="browser-url flex-1 min-w-0 text-xs sm:text-sm truncate">app.meetpilot.com/meetings</div>
+          </div>
+          <div class="dashboard-container border-t-0 rounded-t-none overflow-hidden" style="box-shadow: var(--shadow-hover);">
+            <div class="flex min-h-[300px] sm:min-h-[380px]">
+              <aside class="w-32 sm:w-44 bg-theme-secondary border-r border-theme p-3 sm:p-4 flex flex-col gap-1 flex-shrink-0 hidden sm:flex">
+                <div class="dashboard-sidebar-item active font-medium">Meetings</div>
+                <div class="dashboard-sidebar-item">Today</div>
+                <div class="dashboard-sidebar-item">Yesterday</div>
+                <div class="dashboard-sidebar-item mt-auto">Settings</div>
+              </aside>
+              <div class="flex-1 p-4 sm:p-6 min-w-0">
+                <h3 class="text-sm sm:text-base font-semibold text-theme-primary mb-3 sm:mb-4">Weekly Product Sync</h3>
+                <div class="grid sm:grid-cols-2 gap-3 sm:gap-4">
+                  <div class="bg-theme-secondary rounded-xl p-3 sm:p-4 border border-theme">
+                    <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Transcript</div>
+                    <p class="text-xs sm:text-sm text-theme-primary"><span class="text-theme-secondary">Sarah:</span> Let's review Q1 roadmap...</p>
+                    <p class="text-xs sm:text-sm text-theme-primary"><span class="text-theme-secondary">Mike:</span> Mockups ready by Wednesday.</p>
+                  </div>
+                  <div class="bg-theme rounded-xl p-3 sm:p-4 border border-theme">
+                    <div class="text-xs font-semibold text-theme-secondary uppercase tracking-wider mb-2">Tasks</div>
+                    <div class="flex items-center gap-2 text-xs sm:text-sm"><div class="task-checkbox"></div><span class="text-theme-primary">Send follow-up</span></div>
+                    <div class="flex items-center gap-2 text-xs sm:text-sm mt-1"><div class="task-checkbox"></div><span class="text-theme-primary">Schedule call</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </footer>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works" class="section-spacing bg-theme-secondary px-4 sm:px-6 md:px-12">
+      <div class="content-max">
+        <div class="text-center mb-12 sm:mb-16 lg:mb-20 reveal">
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-theme-primary tracking-tight mb-3 sm:mb-4">How it works</h2>
+          <p class="text-base sm:text-lg md:text-xl text-theme-secondary max-w-2xl mx-auto px-2">Three steps to smarter meetings.</p>
+        </div>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10 lg:gap-12">
+          <div class="text-center reveal">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-theme border border-theme flex items-center justify-center mx-auto mb-4 sm:mb-6" style="box-shadow: var(--shadow);">
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+            </div>
+            <div class="text-xs sm:text-sm font-semibold mb-2" style="color: var(--accent);">Step 1</div>
+            <h3 class="text-lg sm:text-xl font-semibold text-theme-primary mb-2 sm:mb-3">Connect MeetPilot to Zoom or Google Meet</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">One-click install. We join as a silent participant and capture everything.</p>
+          </div>
+          <div class="text-center reveal" style="transition-delay: 0.1s;">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-theme border border-theme flex items-center justify-center mx-auto mb-4 sm:mb-6" style="box-shadow: var(--shadow);">
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>
+            </div>
+            <div class="text-xs sm:text-sm font-semibold mb-2" style="color: var(--accent);">Step 2</div>
+            <h3 class="text-lg sm:text-xl font-semibold text-theme-primary mb-2 sm:mb-3">MeetPilot records and analyzes</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">We transcribe in real time and run AI analysis as you meet. No extra work for you.</p>
+          </div>
+          <div class="text-center reveal sm:col-span-2 lg:col-span-1" style="transition-delay: 0.2s;">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-theme border border-theme flex items-center justify-center mx-auto mb-4 sm:mb-6" style="box-shadow: var(--shadow);">
+              <svg class="w-7 h-7 sm:w-8 sm:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--accent);"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+            <div class="text-xs sm:text-sm font-semibold mb-2" style="color: var(--accent);">Step 3</div>
+            <h3 class="text-lg sm:text-xl font-semibold text-theme-primary mb-2 sm:mb-3">Get transcript, summary, and tasks</h3>
+            <p class="text-theme-secondary text-sm sm:text-base">Everything is ready when the meeting ends. Share with your team or keep it private.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="section-spacing px-4 sm:px-6 md:px-12">
+      <div class="content-max text-center">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-theme-primary tracking-tight mb-3 sm:mb-4 reveal">Simple pricing</h2>
+        <p class="text-base sm:text-lg md:text-xl text-theme-secondary mb-8 sm:mb-10 max-w-xl mx-auto px-2 reveal">One plan. Unlimited meetings. Start free.</p>
+        <a href="#cta" class="btn-primary inline-block reveal">See plans</a>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta" class="section-spacing bg-theme-secondary px-4 sm:px-6 md:px-12">
+      <div class="content-max text-center">
+        <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold text-theme-primary tracking-tight mb-4 sm:mb-6 reveal">Start running smarter meetings today</h2>
+        <p class="text-base sm:text-lg md:text-xl text-theme-secondary mb-8 sm:mb-10 max-w-xl mx-auto px-2 reveal">Join teams who never miss a decision or action item again.</p>
+        <a href="#" class="btn-primary inline-block reveal">Get Started</a>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="py-12 sm:py-16 px-4 sm:px-6 md:px-12 border-t border-theme">
+      <div class="content-max flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
+        <a href="#" class="text-theme-primary font-semibold text-lg sm:text-xl">MeetPilot</a>
+        <nav class="flex items-center gap-6 sm:gap-8 flex-wrap justify-center">
+          <a href="#features" class="text-theme-secondary hover:text-theme-primary text-sm sm:text-[15px] transition-colors duration-300">Features</a>
+          <a href="#pricing" class="text-theme-secondary hover:text-theme-primary text-sm sm:text-[15px] transition-colors duration-300">Pricing</a>
+          <a href="#contact" class="text-theme-secondary hover:text-theme-primary text-sm sm:text-[15px] transition-colors duration-300">Contact</a>
+        </nav>
+        <p class="text-theme-secondary text-xs sm:text-sm">© 2025 MeetPilot. All rights reserved.</p>
+      </div>
+    </footer>
+  </main>
 
   <script>
     (function () {
-      const observerOptions = { root: null, rootMargin: '0px', threshold: 0.08 };
-      const observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-      }, observerOptions);
+      var THEME_KEY = 'meetpilot-theme';
 
-      document.querySelectorAll('.animate-fade-up').forEach(function (el) {
-        observer.observe(el);
+      // Theme toggle
+      function getStoredTheme() {
+        try {
+          return localStorage.getItem(THEME_KEY);
+        } catch (e) {
+          return null;
+        }
+      }
+      function setStoredTheme(value) {
+        try {
+          localStorage.setItem(THEME_KEY, value);
+        } catch (e) {}
+      }
+      function applyTheme(isDark) {
+        document.documentElement.classList.toggle('dark', isDark);
+        document.body.classList.toggle('dark', isDark);
+      }
+      function toggleTheme() {
+        var isDark = document.body.classList.toggle('dark');
+        document.documentElement.classList.toggle('dark', isDark);
+        setStoredTheme(isDark ? 'dark' : 'light');
+      }
+      (function initTheme() {
+        var stored = getStoredTheme();
+        if (stored === 'dark') applyTheme(true);
+        else if (stored === 'light') applyTheme(false);
+      })();
+
+      document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+      document.getElementById('theme-toggle-mobile').addEventListener('click', toggleTheme);
+
+      // Mobile menu
+      var hamburger = document.getElementById('hamburger');
+      var mobileMenu = document.getElementById('mobile-menu');
+      var mobileLinks = document.querySelectorAll('.nav-mobile-link');
+      function closeMobileMenu() {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+      }
+      function openMobileMenu() {
+        hamburger.classList.add('open');
+        mobileMenu.classList.add('open');
+      }
+      hamburger.addEventListener('click', function () {
+        if (mobileMenu.classList.contains('open')) closeMobileMenu();
+        else openMobileMenu();
+      });
+      mobileLinks.forEach(function (link) {
+        link.addEventListener('click', closeMobileMenu);
       });
 
-      // Initial visible for above-the-fold
-      document.querySelectorAll('.hero .animate-fade-up, section:first-of-type .animate-fade-up').forEach(function (el) {
-        el.classList.add('visible');
-      });
+      // Navbar scroll effect
+      var nav = document.querySelector('.nav-bar');
+      function updateNav() {
+        if (window.scrollY > 20) nav.classList.add('scrolled');
+        else nav.classList.remove('scrolled');
+      }
+      window.addEventListener('scroll', updateNav, { passive: true });
+      updateNav();
+
+      // Intersection Observer for reveal animations
+      var revealEls = document.querySelectorAll('.reveal');
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+          });
+        },
+        { rootMargin: '0px 0px -80px 0px', threshold: 0.1 }
+      );
+      revealEls.forEach(function (el) { observer.observe(el); });
     })();
   </script>
 </body>
